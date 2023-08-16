@@ -33,12 +33,11 @@ function formatDay(dateStr) {
 }
 
 class App extends React.Component{
-    state = {search:'',isLoading:false, displayLocation:'', weather:{}}
   constructor(props){
     super(props)
-  
+    this.state = {search:'',isLoading:false, displayLocation:'', weather:{}}
     this.handleInput = this.handleInput.bind(this)
-    // this.fetchWeather = this.fetchWeather.bind(this)
+    this.fetchWeather = this.fetchWeather.bind(this)
   }
   handleInput(e){
     this.setState(
@@ -46,8 +45,7 @@ class App extends React.Component{
     )
     // console.log(e.target.value)
   }
-   fetchWeather=async ()=>{
-    if(this.state.search.length <2) return this.setState({weather:{}})
+  async fetchWeather(){
     try {
       this.setState({isLoading:true})
       // 1) Getting location (geocoding)
@@ -76,24 +74,16 @@ class App extends React.Component{
       this.setState({isLoading:false})
     }
   }
-  componentDidMount(){
-    this.setState({search:localStorage.getItem('location')||''})
-  }
-
-  componentDidUpdate(preProps,prevState){
-    if(prevState.search !== this.state.search){
-      this.fetchWeather()
-      localStorage.setItem('location',this.state.search)
-    }
-  }
 
   render(){
 
 
     return <div className='app'>
       <h1>Classy Weather</h1>
-      <Input search={this.state.search} parent={this} />
-     
+      <div >
+    <input type='text' placeholder='Search for loacation' value={this.state.search} onChange={this.handleInput} />
+      </div>
+      <button onClick={this.fetchWeather}>Get weather</button>
 {this.state.isLoading && <p>Loading...</p>}
 {this.state.weather.weathercode && <Weather weather={this.state.weather} loaction={this.state.displayLocation} />
       }    </div>
@@ -101,17 +91,6 @@ class App extends React.Component{
 }
 
 export default App 
-
-class Input extends React.Component{
-
-    render(){
-        return <div >
-        <input type='text' placeholder='Search for loacation' value={this.props.search} onChange={(e)=>this.props.parent.setState(
-      {search:e.target.value}
-    )} />
-          </div>
-    }
-}
 
 class Weather extends React.Component{
   render(){
